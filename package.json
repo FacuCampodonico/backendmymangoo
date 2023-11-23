@@ -1,7 +1,7 @@
 {
   "name": "mymangofrom0",
   "version": "1.0.0",
-  "description": "",
+  "description": "\"# backendmymangoo\"",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
