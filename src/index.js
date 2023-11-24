@@ -1,10 +1,12 @@
-const express = require('express');
-const morgan = require('morgan');
+const express = require('express')
+const morgan = require('morgan')
+const cors = require('cors')
 
-const userRoutes = require('./routes/routes');
+const userRoutes = require('./routes/routes')
 
-const app = express();
+const app = express()
 
+app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
 
