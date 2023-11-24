@@ -1,6 +1,6 @@
 const pool = require('../db')
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
     try {
 
         const allusers = await pool.query('SELECT * FROM users')
@@ -8,11 +8,11 @@ const getUsers = async (req, res) => {
         res.json(allusers.rows)
         
     } catch (error) {
-        console.log(error.message);
+        next(error)
     }
 }
 
-const getSingleUser = async (req, res) => {
+const getSingleUser = async (req, res, next) => {
     try {
 
         const {id} = req.params
@@ -26,11 +26,11 @@ const getSingleUser = async (req, res) => {
         return res.json(result.rows[0]);
 
     } catch (error) {
-        console.log(error.message);
+        next(error)
     }
 }
 
-const newUser = async (req, res) => {
+const newUser = async (req, res, next) => {
     const {mail, password} = req.body
 
     console.log('Datos recibidos:', mail, password);
@@ -46,12 +46,11 @@ const newUser = async (req, res) => {
         res.json(result.rows[0]);
 
     } catch (error) {
-        //console.log(error.message);
-        res.json({ error: error.message});
+        next(error)
     }
 }
 
-const deleteUser =  async (req, res) => {
+const deleteUser =  async (req, res, next) => {
     try {
 
         const {id} = req.params
@@ -65,11 +64,11 @@ const deleteUser =  async (req, res) => {
         return res.sendStatus(204);
 
     } catch (error) {
-        console.log(error.message);
+        next(error)
     }
 }
 
-const updatingUser = async (req, res) => {
+const updatingUser = async (req, res, next) => {
 
     try {
 
@@ -89,7 +88,7 @@ const updatingUser = async (req, res) => {
         
     } catch (error) {
 
-        console.log(error.message);
+        next(error)
     }
 }
 
