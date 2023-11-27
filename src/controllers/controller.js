@@ -1,4 +1,5 @@
 const pool = require('../db')
+const bcrypt = require('bcrypt')
 
 const getUsers = async (req, res, next) => {
     try {
@@ -33,13 +34,14 @@ const getSingleUser = async (req, res, next) => {
 const newUser = async (req, res, next) => {
     const {mail, password} = req.body
 
-    console.log('Datos recibidos:', mail, password);
+    //console.log('Datos recibidos:', mail, password);
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     try {
 
         const result = await pool.query("INSERT INTO users (mail, password) VALUES ($1, $2) RETURNING *", [
             mail, 
-            password
+            hashedPassword
         ]);
     
         //console.log(result)
@@ -74,9 +76,10 @@ const updatingUser = async (req, res, next) => {
 
         const { id } = req.params;
         const {mail, password} = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10)
     
         const result = await pool.query("UPDATE users SET mail = $1, password = $2 WHERE id = $3 RETURNING *",
-         [mail, password, id]
+         [mail, hashedPassword, id]
         );
     
         if (result.rows.length === 0)
