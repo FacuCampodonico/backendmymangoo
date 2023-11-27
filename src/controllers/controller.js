@@ -1,5 +1,6 @@
 const pool = require('../db')
 const bcrypt = require('bcrypt')
+const jwtGenerator = require("../utils/jwtGenerator")
 
 const getUsers = async (req, res, next) => {
     try {
@@ -32,20 +33,31 @@ const getSingleUser = async (req, res, next) => {
 }
 
 const newUser = async (req, res, next) => {
-    const {mail, password} = req.body
-
-    //console.log('Datos recibidos:', mail, password);
-    const hashedPassword = await bcrypt.hash(password, 10)
-
     try {
+        const {mail, password} = req.body
+
+        console.log('Datos recibidos:', mail, password);
+    
+        const user = await pool.query("SELECT * FROM users WHERE mail = $1",[
+            mail
+        ]);
+    
+        if(user.rows.length !== 0){
+            return res.status(401).send("user already exist")
+        }
+    
+        const saltRound = 10
+        const salt = await bcrypt.genSalt(saltRound)
+        const bcryptPassword = await bcrypt.hash(password, salt)
 
         const result = await pool.query("INSERT INTO users (mail, password) VALUES ($1, $2) RETURNING *", [
             mail, 
-            hashedPassword
+            bcryptPassword
         ]);
     
-        //console.log(result)
-        res.json(result.rows[0]);
+        const token = jwtGenerator(result.rows[0].id)
+
+        res.json({ token })
 
     } catch (error) {
         next(error)
