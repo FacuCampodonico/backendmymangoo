@@ -7,7 +7,7 @@ function jwtGenerator(id){
         user: id
     }
 
-    return jwt.sign(payload, process.env.jwtSecret, {expresIn: "1hr"})
+    return jwt.sign(payload, process.env.jwtSecret, {expiresIn: "1hr"})
 
 }
 

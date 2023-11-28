@@ -107,10 +107,39 @@ const updatingUser = async (req, res, next) => {
     }
 }
 
+const logUser = async (req, res, next) => {
+    try {
+    
+        const {mail, password} = req.body
+
+        const user = await pool.query("SELECT * FROM users WHERE mail = $1",[
+            mail
+        ])
+
+        if (user.rows.length === 0){
+            return res.status(401).json("email is incorrect")
+        }
+
+        const validPassword = await bcrypt.compare(password, user.rows[0].password)
+
+        if (!validPassword){
+            return res.status(401).json("password is incorrect")
+        }
+        
+        const token = jwtGenerator(user.rows[0].id)
+
+        res.json({ token })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getUsers,
     getSingleUser,
     newUser,
     deleteUser,
-    updatingUser
+    updatingUser,
+    logUser
 }
