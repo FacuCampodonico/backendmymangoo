@@ -1,6 +1,8 @@
 const pool = require('../db')
 const bcrypt = require('bcrypt')
 const jwtGenerator = require("../utils/jwtGenerator")
+const validInfo = require("../middleware/validInfo")
+const authorization = require("../middleware/authorization")
 
 const getUsers = async (req, res, next) => {
     try {
@@ -32,7 +34,7 @@ const getSingleUser = async (req, res, next) => {
     }
 }
 
-const newUser = async (req, res, next) => {
+const newUser =  async (req, res, next) => {
     try {
         const {mail, password} = req.body
 
@@ -135,11 +137,21 @@ const logUser = async (req, res, next) => {
     }
 }
 
+const verify = async (req, res, next) => {
+    try {
+        res.json(true)
+        
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getUsers,
     getSingleUser,
     newUser,
     deleteUser,
     updatingUser,
-    logUser
+    logUser,
+    verify
 }
