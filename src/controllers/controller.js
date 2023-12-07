@@ -36,9 +36,9 @@ const getSingleUser = async (req, res, next) => {
 
 const newUser =  async (req, res, next) => {
     try {
-        const {mail, password} = req.body
+        const {mail, password, name} = req.body
 
-        console.log('Datos recibidos:', mail, password);
+        console.log('Datos recibidos:', mail, password, name);
     
         const user = await pool.query("SELECT * FROM users WHERE mail = $1",[
             mail
@@ -52,9 +52,10 @@ const newUser =  async (req, res, next) => {
         const salt = await bcrypt.genSalt(saltRound)
         const bcryptPassword = await bcrypt.hash(password, salt)
 
-        const result = await pool.query("INSERT INTO users (mail, password) VALUES ($1, $2) RETURNING *", [
+        const result = await pool.query("INSERT INTO users (mail, password, name) VALUES ($1, $2, $3) RETURNING *", [
             mail, 
-            bcryptPassword
+            bcryptPassword,
+            name
         ]);
     
         const token = jwtGenerator(result.rows[0].id)
